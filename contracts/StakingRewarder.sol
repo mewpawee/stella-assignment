@@ -39,7 +39,7 @@ contract StakingRewarder {
     function _updateReward() internal {
         uint256 currentTimestamp = block.timestamp;
         uint256 deltaTime = currentTimestamp - lastTimestamp;
-        // calculate only the when the timestamp changed
+        // calculate only when the timestamp changed
         if (deltaTime > 0) {
             // if there are no shares, only update the lastTimestamp for future reference.
             if (totalShare > 0) {
