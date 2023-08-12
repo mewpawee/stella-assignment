@@ -10,11 +10,11 @@ contract StakingRewarderTest is Test {
     using SafeERC20 for IERC20;
 
     StakingRewarder public stakingRewarder;
-    address constant user1 = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
-    address constant user2 = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8;
-    address constant user3 = 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC;
-    address constant USDT = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
-    address constant ALPHA = 0xa1faa113cbE53436Df28FF0aEe54275c13B40975;
+    address private constant user1 = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+    address private constant user2 = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8;
+    address private constant user3 = 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC;
+    address private constant USDT = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
+    address private constant ALPHA = 0xa1faa113cbE53436Df28FF0aEe54275c13B40975;
 
     function setUp() public {
         // using ethereum fork rpc
@@ -34,7 +34,7 @@ contract StakingRewarderTest is Test {
     }
 
     // @dev simple run though scenerio, don't concerns about the token decimals
-    function testRunningScenerio() public {
+    function testScenerio() public {
         startHoax(user1);
         stakingRewarder.deposit(5);
         startHoax(user2);
@@ -69,15 +69,14 @@ contract StakingRewarderTest is Test {
         stakingRewarder.withdraw(5);
         uint256 accRewardPerShare3 = stakingRewarder.accumulatedRewardPerShare();
         // get user1's rewardBalance record
-        uint256 user1RewardBalance3 = stakingRewarder.accumulatedRewardPerShare();
+        uint256 user1RewardBalance3 = stakingRewarder.rewardBalances(user1);
         // get current total share
-        uint256 totalShare3 = stakingRewarder.totalShare();
+        uint256 totalRemainingShare = stakingRewarder.totalShare();
 
         // current should be is (100/20)* 10 + (100/20) * 5 + (100/20) * 5 = 100 per share
         console.log("AccumulatedRewardPerShare3", accRewardPerShare3);
-        // user1'reward should update to 3(50) + 3(75-50)= 225 tokens
+        // user1'reward should update to 5 * 100 = 500 tokens
         console.log("User1RewardBalance3", user1RewardBalance3);
-        // Should be 20 - 5 = 5
-        console.log("Total Share 3", totalShare3);
+        console.log("TotalRemainingShare", totalRemainingShare);
     }
 }

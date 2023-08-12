@@ -14,12 +14,15 @@ contract StakingRewarder {
     mapping(address => uint256) public depositBalances;
     mapping(address => uint256) public rewardBalances;
 
-    uint256 public accumulatedRewardPerShare;
-    mapping(address => uint256) publicuserAccumulatedRewardPerShare;
+    uint256 public accumulatedRewardPerShare; // lastest accumulateRewardPerShare
+    mapping(address => uint256) public userAccumulatedRewardPerShare; // mapping of user to user's latest accumulateRewardPerShare State
 
     uint256 public lastTimestamp;
     uint256 public totalShare;
 
+    uint256 private constant ACC_PRECISION = 1e12; // add some precision to avoid losing significant numbers when dividing.
+
+    // Events
     event UpdateReward(uint256 indexed timestamp, uint256 accumulatedRewardPerShare);
     event Deposit(address indexed sender, uint256 amount);
     event Withdraw(address indexed sender, uint256 amount);
@@ -31,24 +34,27 @@ contract StakingRewarder {
         rewardRatePerSec = _rewardRatePerSec;
     }
 
+    // @dev function to update accumulatedRewardPerShare, rewardBalances,
+    // userAccumulatedRewardPerShare and lastTimestamp
     function _updateReward() internal {
-        uint256 _currentTimestamp = block.timestamp;
-        uint256 _deltaTime = _currentTimestamp - lastTimestamp;
-        // update the accumulatedRewardPershare from the delta time
-        if (_deltaTime > 0 && totalShare != 0) {
-            // accumulatedRewardPerShare += (rewardRatePerSec / totalShare) * deltaTime / 1000
-            // delta time is in milliseconds so it need to divide by 1000 to be a second
-            accumulatedRewardPerShare += (rewardRatePerSec * _deltaTime) / (1000 * totalShare);
-            // the different between the accumulatedRewardPerShare of the current state and the last user record
-            uint256 _userAccumulatedRewardAmount =
-                (accumulatedRewardPerShare - userAccumulatedRewardPerShare[msg.sender]) * depositBalances[msg.sender];
-            // add user's reward record
-            rewardBalances[msg.sender] += _userAccumulatedRewardAmount;
-            // reset the user accumaratedRewardPershare to lastest accumaratedRewardPershare
-            userAccumulatedRewardPerShare[msg.sender] = accumulatedRewardPerShare;
+        uint256 currentTimestamp = block.timestamp;
+        uint256 deltaTime = currentTimestamp - lastTimestamp;
+        if (deltaTime > 0) {
+            if (totalShare > 0) {
+                // delta time is in milliseconds, so it needs to be divided by 1000 to represent a second.
+                // use ACC_PRECISION to prevent precision loss.
+                accumulatedRewardPerShare += (rewardRatePerSec * deltaTime) * ACC_PRECISION / (1000 * totalShare);
+                // the user's share is multiplied by the difference of accumulatedRewardPerShare compared to the previous state.
+                uint256 userAccumulatedRewardAmount = depositBalances[msg.sender]
+                    * (accumulatedRewardPerShare - userAccumulatedRewardPerShare[msg.sender]);
+                // add the user's reward record, using ACC_PRECISION to restore the original amount.
+                rewardBalances[msg.sender] += userAccumulatedRewardAmount / ACC_PRECISION;
+                // reset the user's accumulatedRewardPerShare state to the latest accumulatedRewardPerShare.
+                userAccumulatedRewardPerShare[msg.sender] = accumulatedRewardPerShare;
+            }
+            lastTimestamp = _currentTimestamp;
+            emit UpdateReward(lastTimestamp, accumulatedRewardPerShare);
         }
-        lastTimestamp = _currentTimestamp;
-        emit UpdateReward(_currentTimestamp, accumulatedRewardPerShare);
     }
 
     function deposit(uint256 _amt) external {
