@@ -7,7 +7,7 @@ $$rewardPerShare = rewardRatePerSec \cdot \frac{deltaTime}{totalShare}$$
 
 $$accumulatedRewardPerShare_n = rewardPerShare_1 + rewardPerShare_2 + rewardPerShare_3 + \cdots + rewardPerShare_n \hspace{10pt} where \ n >= 1$$
 
-$$accumulatedRewardPerShare_{n,m} = rewardPerShare_m - rewardPerShare_n \hspace{10pt} where \ m > n >= 1$$
+$$accumulatedRewardPerShare_{n,m} = accumulatedRewardPerShare_m - accumulatedRewardPerShare_n \hspace{10pt} where \ m > n >= 1$$
 
 $$userRewardAmount_{n,m} = userShare * accumulatedRewardPerShare_{n,m}  \hspace{10pt} where \ m > n >= 1$$
 
