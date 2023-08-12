@@ -75,10 +75,11 @@ contract StakingRewarder {
     }
 
     function claimAllRewards() external {
+        // need to also update here to get the update user's reward balance befor the claim
         _updateReward();
-        uint256 _rewardAmount = rewardBalances[msg.sender];
+        uint256 rewardAmount = rewardBalances[msg.sender];
         rewardBalances[msg.sender] = 0;
-        IERC20(rewardToken).safeTransfer(msg.sender, _rewardAmount);
-        emit ClaimAllRewards(msg.sender, _rewardAmount);
+        IERC20(rewardToken).safeTransfer(msg.sender, rewardAmount);
+        emit ClaimAllRewards(msg.sender, rewardAmount);
     }
 }

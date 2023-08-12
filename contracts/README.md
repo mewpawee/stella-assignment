@@ -1,7 +1,7 @@
-# Explaination
+# Explanation
 
 ## StakingRewarder
-We could calculate the current accumulatedRewardPerShare from the following formula
+We can calculate the reward that needs to be distributed using the following formulas:
 
 $$rewardPerShare = rewardRatePerSec \cdot \frac{deltaTime}{totalShare}$$
 
