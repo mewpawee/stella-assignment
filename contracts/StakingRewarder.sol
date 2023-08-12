@@ -77,7 +77,7 @@ contract StakingRewarder {
     }
 
     function claimAllRewards() external {
-        // need to also update here to get the update user's reward balance befor the claim
+        // need to also update here to get the updated user's reward balance before the claim
         _updateReward();
         uint256 rewardAmount = rewardBalances[msg.sender];
         rewardBalances[msg.sender] = 0;
