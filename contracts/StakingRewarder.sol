@@ -39,10 +39,11 @@ contract StakingRewarder {
     function _updateReward() internal {
         uint256 currentTimestamp = block.timestamp;
         uint256 deltaTime = currentTimestamp - lastTimestamp;
+        // calculate only the when the timestamp changed
         if (deltaTime > 0) {
             if (totalShare > 0) {
                 // delta time is in milliseconds, so it needs to be divided by 1000 to represent a second.
-                // use ACC_PRECISION to prevent precision loss.
+                // use ACC_PRECISION to prevent precision loss from dividing.
                 accumulatedRewardPerShare += (rewardRatePerSec * deltaTime) * ACC_PRECISION / (1000 * totalShare);
                 // the user's share is multiplied by the difference of accumulatedRewardPerShare compared to the previous state.
                 uint256 userAccumulatedRewardAmount = depositBalances[msg.sender]
@@ -52,7 +53,7 @@ contract StakingRewarder {
                 // reset the user's accumulatedRewardPerShare state to the latest accumulatedRewardPerShare.
                 userAccumulatedRewardPerShare[msg.sender] = accumulatedRewardPerShare;
             }
-            lastTimestamp = _currentTimestamp;
+            lastTimestamp = currentTimestamp;
             emit UpdateReward(lastTimestamp, accumulatedRewardPerShare);
         }
     }
