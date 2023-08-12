@@ -41,11 +41,13 @@ contract StakingRewarder {
         uint256 deltaTime = currentTimestamp - lastTimestamp;
         // calculate only the when the timestamp changed
         if (deltaTime > 0) {
+            // if there are no shares, only update the lastTimestamp for future reference.
             if (totalShare > 0) {
                 // delta time is in milliseconds, so it needs to be divided by 1000 to represent a second.
                 // use ACC_PRECISION to prevent precision loss from dividing.
                 accumulatedRewardPerShare += (rewardRatePerSec * deltaTime) * ACC_PRECISION / (1000 * totalShare);
                 // the user's share is multiplied by the difference of accumulatedRewardPerShare compared to the previous state.
+                // there are no rewards for the first-time user interaction since the user's depositBalances is zero.
                 uint256 userAccumulatedRewardAmount = depositBalances[msg.sender]
                     * (accumulatedRewardPerShare - userAccumulatedRewardPerShare[msg.sender]);
                 // add the user's reward record, using ACC_PRECISION to restore the original amount.
