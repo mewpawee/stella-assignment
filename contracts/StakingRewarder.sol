@@ -52,7 +52,7 @@ contract StakingRewarder {
                     * (accumulatedRewardPerShare - userAccumulatedRewardPerShare[msg.sender]);
                 // add the user's reward record, using ACC_PRECISION to restore the original amount.
                 rewardBalances[msg.sender] += userAccumulatedRewardAmount / ACC_PRECISION;
-                // reset the user's accumulatedRewardPerShare state to the latest accumulatedRewardPerShare.
+                // change the user's accumulatedRewardPerShare value to the latest accumulatedRewardPerShare.
                 userAccumulatedRewardPerShare[msg.sender] = accumulatedRewardPerShare;
             }
             lastTimestamp = currentTimestamp;
